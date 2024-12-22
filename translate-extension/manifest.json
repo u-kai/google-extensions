@@ -1,8 +1,9 @@
 {
   "name": "Translator",
   "version": "1.0.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Translate selected text",
+  "host_permissions": ["https://*/*"],
   "content_scripts": [
     {
       "matches": ["https://*/*"],

@@ -1,30 +1,47 @@
 let tooltip = null;
 let translateTimeout = null;
 
-function isAlphanumericAndEmpty(str) {
-  return /^[a-zA-Z0-9\s]*$/.test(str);
+function isTarget(str) {
+  const getByteLength = (char) => {
+    const encodedChar = new TextEncoder().encode(char); // Encode the character to UTF-8
+    return encodedChar.length; // Return the byte length of the encoded character
+  };
+  if (str.length <= 1) {
+    return false;
+  }
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i];
+    if (getByteLength(char) > 1) {
+      return false;
+    }
+  }
+  return true;
 }
 
-document.addEventListener("mouseup", async function (e) {
+document.addEventListener("dblclick", async function (e) {
+  translateSelectedText(translateText);
+});
+
+document.addEventListener("keydown", async function (e) {
+  if (e.key === "Enter") {
+    translateSelectedText(translateText);
+  }
+});
+
+async function translateSelectedText(translateFunc) {
   const selection = window.getSelection();
   const selectedText = selection.toString().trim();
 
-  // 既存のツールチップを削除
-  if (tooltip) {
-    document.body.removeChild(tooltip);
-    tooltip = null;
-  }
-
-  if (selectedText && isAlphanumericAndEmpty(selectedText)) {
+  if (selectedText && isTarget(selectedText)) {
     // 選択範囲の位置を取得
     const range = selection.getRangeAt(0);
     const rect = range.getBoundingClientRect();
 
-    // 翻訳の遅延を設定
-    const translation = await translateText(selectedText);
+    const translation = await translateFunc(selectedText);
+
     showTooltip(translation, rect);
   }
-});
+}
 
 document.addEventListener("mousedown", function (e) {
   if (tooltip && !tooltip.contains(e.target)) {
