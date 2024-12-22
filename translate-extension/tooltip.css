@@ -9,10 +9,12 @@
   z-index: 10000;
   max-width: 300px;
   word-wrap: break-word;
+  display: flex;
+  align-items: center;
 }
 
 .translation-line {
-  display: block; /* 各行をブロック要素として表示 */
+  margin-bottom: 4px;
 }
 
 .translation-tooltip:after {
@@ -24,4 +26,13 @@
   border-width: 0 8px 8px;
   border-style: solid;
   border-color: transparent transparent white;
+}
+.speak-button {
+  margin-bottom: 4px;
+  all: unset;
+  display: inline-block;
+  border: none;
+  background: none;
+  margin-left: 8px;
+  cursor: pointer;
 }

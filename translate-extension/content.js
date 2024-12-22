@@ -11,6 +11,9 @@ function isTarget(str) {
   }
   for (let i = 0; i < str.length; i++) {
     const char = str[i];
+    if (char === "’") {
+      continue;
+    }
     if (getByteLength(char) > 1) {
       return false;
     }
@@ -21,9 +24,11 @@ function isTarget(str) {
 document.addEventListener("dblclick", async function (e) {
   translateSelectedText(translateText);
 });
-
+document.addEventListener("contextmenu", async function (e) {
+  translateSelectedText(translateText);
+});
 document.addEventListener("keydown", async function (e) {
-  if (e.key === "Enter") {
+  if (e.key === "Enter" || e.key === "Shift") {
     translateSelectedText(translateText);
   }
 });
@@ -39,7 +44,7 @@ async function translateSelectedText(translateFunc) {
 
     const translation = await translateFunc(selectedText);
 
-    showTooltip(translation, rect);
+    showTooltip(selectedText, translation, rect);
   }
 }
 
@@ -66,7 +71,7 @@ async function translateText(text) {
   return res;
 }
 
-function showTooltip(text, selectionRect) {
+function showTooltip(src, text, selectionRect) {
   tooltip = document.createElement("div");
   tooltip.className = "translation-tooltip";
 
@@ -77,6 +82,28 @@ function showTooltip(text, selectionRect) {
     lineElement.textContent = line;
     tooltip.appendChild(lineElement);
   });
+  button = document.createElement("button");
+  button.className = "speak-button";
+  button.addEventListener("click", function () {
+    const speech = (word) => {
+      const synth = window.speechSynthesis;
+      const voices = synth
+        .getVoices()
+        .filter((v) => v.lang !== undefined && v.lang === "en-US");
+      if (voices.length === 0) {
+        setTimeout(() => speech(word), 100);
+        return;
+      }
+      const voice = voices[0];
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.voice = voice;
+      synth.speak(utterance);
+    };
+    speech(src);
+  });
+  button.textContent = "🔊";
+  tooltip.appendChild(button);
+
   tooltip.style.visibility = "hidden";
   document.body.appendChild(tooltip);
 
