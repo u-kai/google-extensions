@@ -67,7 +67,8 @@ async function translateText(text) {
   };
   const res = await fetch("http://localhost:9999/gpt4o-mini", req)
     .then((res) => res.json())
-    .then((res) => res.result);
+    .then((res) => res.result)
+    .catch((err) => alert(`Failed to translate: ${err.toString()}`));
   return res;
 }
 
