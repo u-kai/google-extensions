@@ -75,14 +75,11 @@ async function translateText(text) {
 function showTooltip(src, text, selectionRect) {
   tooltip = document.createElement("div");
   tooltip.className = "translation-tooltip";
-
-  // テキストを行ごとに分割して、各行をspan要素として追加
-  text.split("\n").forEach((line) => {
-    const lineElement = document.createElement("span");
-    lineElement.className = "translation-line";
-    lineElement.textContent = line;
-    tooltip.appendChild(lineElement);
-  });
+  const newText = text.replace(/\n/g, "");
+  const lineElement = document.createElement("span");
+  lineElement.className = "translation-line";
+  lineElement.textContent = newText;
+  tooltip.appendChild(lineElement);
   button = document.createElement("button");
   button.className = "speak-button";
   button.addEventListener("click", function () {
