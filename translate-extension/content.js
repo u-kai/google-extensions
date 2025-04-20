@@ -11,7 +11,18 @@ function isTarget(str) {
   }
   for (let i = 0; i < str.length; i++) {
     const char = str[i];
-    if (char === "’") {
+    if (
+      char === "’" ||
+      char === "”" ||
+      char === "“" ||
+      char === "‘" ||
+      char === '"' ||
+      char === "'" ||
+      char === "…" ||
+      char === "—" ||
+      char === "–" ||
+      char === "'"
+    ) {
       continue;
     }
     if (getByteLength(char) > 1) {
@@ -65,7 +76,7 @@ async function translateText(text) {
       "Content-Type": "application/json",
     },
   };
-  const res = await fetch("http://localhost:9999/gpt4o-mini", req)
+  const res = await fetch("http://localhost:9999/gemini15flash", req)
     .then((res) => res.json())
     .then((res) => res.result)
     .catch((err) => alert(`Failed to translate: ${err.toString()}`));
