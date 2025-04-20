@@ -66,21 +66,49 @@ document.addEventListener("mousedown", function (e) {
   }
 });
 
+function splitStringByLength(str, length) {
+  if (length <= 0) {
+    return [str];
+  }
+
+  const result = [];
+  let start = 0;
+
+  while (start < str.length) {
+    let end = start + length;
+    if (end < str.length) {
+      const lastDot = str.lastIndexOf(".", end);
+      if (lastDot >= start) {
+        end = lastDot + 1;
+      }
+    }
+    result.push(str.slice(start, end));
+    start = end;
+  }
+
+  return result;
+}
+
 async function translateText(text) {
-  const req = {
-    method: "POST",
-    body: JSON.stringify({
-      prompt: `Could you translate "${text}" into Japanese? Your answer must consist only of the translation.`,
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
-  const res = await fetch("http://localhost:9999/gemini15flash", req)
-    .then((res) => res.json())
-    .then((res) => res.result)
-    .catch((err) => alert(`Failed to translate: ${err.toString()}`));
-  return res;
+  const prompts = splitStringByLength(text, 300);
+  let result = "";
+  for (const prompt of prompts) {
+    const req = {
+      method: "POST",
+      body: JSON.stringify({
+        prompt: `Could you translate "${prompt}" into Japanese? Your answer must consist only of the translation.`,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const res = await fetch("http://localhost:9999/gemini15flash", req)
+      .then((res) => res.json())
+      .then((res) => res.result)
+      .catch((err) => alert(`Failed to translate: ${err.toString()}`));
+    result += res;
+  }
+  return result;
 }
 
 function showTooltip(src, text, selectionRect) {
